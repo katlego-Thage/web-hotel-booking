@@ -1,0 +1,60 @@
+
+    .unauthorized-container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    
+    .unauthorized-card {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      padding: 48px 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .icon-container {
+      margin-bottom: 24px;
+    }
+    
+    .icon-container mat-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+    }
+    
+    h1 {
+      margin: 0 0 16px;
+      font-size: 32px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    p {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #666;
+    }
+    
+    .sub-text {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 32px;
+    }
+    
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .actions button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }

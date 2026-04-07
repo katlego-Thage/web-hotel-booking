@@ -1,1 +1,97 @@
-<p>payment-form works!</p>
+<template>
+    <div class="container">
+      <div class="page-header">
+        <button mat-icon-button routerLink="/payments">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">{{ isEditMode ? 'Edit Payment' : 'Record Payment' }}</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Payment Form -->
+      <mat-card *ngIf="!isLoading" class="form-card">
+        <mat-card-content>
+          <form (ngSubmit)="onSubmit()" class="payment-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Select Booking</mat-label>
+                <mat-select [(ngModel)]="payment.bookingID" name="bookingID" required>
+                  <mat-option *ngFor="let booking of bookings" [value]="booking.bookingID">
+                    Booking #{{ booking.bookingID }} - Room {{ booking.roomNumber || booking.roomID }}
+                    ({{ booking.tenantName || 'Guest #' + booking.tenantID }})
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>confirmation_number</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Amount</mat-label>
+                <input 
+                  matInput 
+                  type="number"
+                  [(ngModel)]="payment.amount" 
+                  name="amount"
+                  placeholder="Enter amount"
+                  required
+                  min="0"
+                  step="0.01">
+                <mat-icon matPrefix>attach_money</mat-icon>
+                <span matSuffix>USD</span>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Payment Method</mat-label>
+                <mat-select [(ngModel)]="payment.paymentMethod" name="paymentMethod" required>
+                  <mat-option *ngFor="let method of paymentMethods" [value]="method.value">
+                    <mat-icon>{{ method.icon }}</mat-icon>
+                    {{ method.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>payment</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Payment Date</mat-label>
+                <input 
+                  matInput 
+                  [matDatepicker]="picker"
+                  [(ngModel)]="payment.paymentDate" 
+                  name="paymentDate"
+                  required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-icon matPrefix>calendar_today</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                mat-button 
+                type="button" 
+                routerLink="/payments">
+                Cancel
+              </button>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="isSaving">
+                <mat-spinner diameter="20" *ngIf="isSaving"></mat-spinner>
+                <span *ngIf="!isSaving">{{ isEditMode ? 'Update' : 'Record' }}</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</template>

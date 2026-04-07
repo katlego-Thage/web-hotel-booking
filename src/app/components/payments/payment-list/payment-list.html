@@ -1,1 +1,168 @@
-<p>payment-list works!</p>
+<template>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">Payment Management</h1>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          routerLink="/payments/new"
+          *ngIf="canCreate">
+          <mat-icon>add</mat-icon>
+          Record Payment
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Summary Cards -->
+      <div *ngIf="!isLoading" class="summary-cards">
+        <mat-card class="summary-card total">
+          <mat-card-content>
+            <mat-icon>account_balance_wallet</mat-icon>
+            <div class="summary-info">
+              <div class="summary-value">{{ totalRevenue | currency }}</div>
+              <div class="summary-label">Total Revenue</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="summary-card count">
+          <mat-card-content>
+            <mat-icon>receipt</mat-icon>
+            <div class="summary-info">
+              <div class="summary-value">{{ payments.length }}</div>
+              <div class="summary-label">Total Payments</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="summary-card average">
+          <mat-card-content>
+            <mat-icon>trending_up</mat-icon>
+            <div class="summary-info">
+              <div class="summary-value">{{ averagePayment | currency }}</div>
+              <div class="summary-label">Average Payment</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Payments Table -->
+      <mat-card *ngIf="!isLoading" class="table-card">
+        <mat-card-content>
+          <!-- Filters -->
+          <div class="filters-row">
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Search payments</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Filter by booking, method...">
+              <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="method-filter">
+              <mat-label>Payment Method</mat-label>
+              <mat-select [(ngModel)]="methodFilter" (selectionChange)="filterByMethod()">
+                <mat-option value="">All Methods</mat-option>
+                <mat-option *ngFor="let method of paymentMethods" [value]="method.value">
+                  {{ method.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="payments-table">
+              
+              <!-- Payment ID Column -->
+              <ng-container matColumnDef="paymentID">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment # </th>
+                <td mat-cell *matCellDef="let payment"> #{{ payment.paymentID }} </td>
+              </ng-container>
+
+              <!-- Booking Column -->
+              <ng-container matColumnDef="booking">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Booking </th>
+                <td mat-cell *matCellDef="let payment">
+                  <div class="booking-info">
+                    <mat-icon>confirmation_number</mat-icon>
+                    <span>Booking #{{ payment.bookingID }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Amount Column -->
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+                <td mat-cell *matCellDef="let payment">
+                  <span class="amount">{{ payment.amount | currency }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Method Column -->
+              <ng-container matColumnDef="method">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Method </th>
+                <td mat-cell *matCellDef="let payment">
+                  <div class="method-info">
+                    <mat-icon>{{ getMethodIcon(payment.paymentMethod) }}</mat-icon>
+                    <span>{{ payment.paymentMethod }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Date Column -->
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment Date </th>
+                <td mat-cell *matCellDef="let payment">
+                  {{ payment.paymentDate | date:'mediumDate' }}
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let payment">
+                  <div class="action-buttons">
+                    <button 
+                      mat-icon-button 
+                      color="primary"
+                      [routerLink]="['/payments/edit', payment.paymentID]"
+                      matTooltip="Edit"
+                      *ngIf="canEdit">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deletePayment(payment)"
+                      matTooltip="Delete"
+                      *ngIf="canDelete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+              <!-- No Data Row -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+                  <mat-icon>money_off</mat-icon>
+                  <p>No payments found</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <mat-paginator 
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            showFirstLastButtons
+            aria-label="Select page of payments">
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</template>

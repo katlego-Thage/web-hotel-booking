@@ -1,0 +1,116 @@
+
+    .container {
+      padding: 24px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .page-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    .filters-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-field {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .status-filter {
+      width: 150px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .bookings-table {
+      width: 100%;
+    }
+    
+    .room-info, .tenant-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .room-info mat-icon, .tenant-info mat-icon {
+      color: #667eea;
+    }
+    
+    .room-number {
+      font-weight: 500;
+    }
+    
+    .room-type {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .dates-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .dates-info > div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    
+    .dates-info mat-icon.small {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #666;
+    }
+    
+    .status-chip {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    
+    .status-chip.pending { background-color: #fff3e0; color: #e65100; }
+    .status-chip.confirmed { background-color: #e8f5e9; color: #2e7d32; }
+    .status-chip.checkedin { background-color: #e3f2fd; color: #1565c0; }
+    .status-chip.checkedout { background-color: #f5f5f5; color: #616161; }
+    .status-chip.cancelled { background-color: #ffebee; color: #c62828; }
+    
+    .action-buttons {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 48px;
+      color: #999;
+    }
+    
+    .no-data mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 48px;
+    }

@@ -1,1 +1,93 @@
-<p>room-form works!</p>
+ <template>
+    <div class="container">
+      <div class="page-header">
+        <button mat-icon-button routerLink="/rooms">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">{{ isEditMode ? 'Edit Room' : 'Add New Room' }}</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Room Form -->
+      <mat-card *ngIf="!isLoading" class="form-card">
+        <mat-card-content>
+          <form (ngSubmit)="onSubmit()" class="room-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Room Number</mat-label>
+                <input 
+                  matInput 
+                  [(ngModel)]="room.roomNumber" 
+                  name="roomNumber"
+                  placeholder="e.g., 101, A-12"
+                  required>
+                <mat-icon matPrefix>meeting_room</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Room Type</mat-label>
+                <mat-select [(ngModel)]="room.roomType" name="roomType" required>
+                  <mat-option *ngFor="let type of roomTypes" [value]="type.value">
+                    <div class="type-option">
+                      <strong>{{ type.label }}</strong>
+                      <small>{{ type.description }}</small>
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>king_bed</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Price Per Night</mat-label>
+                <input 
+                  matInput 
+                  type="number"
+                  [(ngModel)]="room.pricePerNight" 
+                  name="pricePerNight"
+                  placeholder="Enter price"
+                  required
+                  min="0"
+                  step="0.01">
+                <mat-icon matPrefix>attach_money</mat-icon>
+                <span matSuffix>USD</span>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row toggle-row">
+              <mat-slide-toggle 
+                [(ngModel)]="room.isAvailable" 
+                name="isAvailable"
+                color="primary">
+                Room Available
+              </mat-slide-toggle>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                mat-button 
+                type="button" 
+                routerLink="/rooms">
+                Cancel
+              </button>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="isSaving">
+                <mat-spinner diameter="20" *ngIf="isSaving"></mat-spinner>
+                <span *ngIf="!isSaving">{{ isEditMode ? 'Update' : 'Create' }}</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</template>

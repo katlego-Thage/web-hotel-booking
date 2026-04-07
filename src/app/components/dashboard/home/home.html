@@ -1,1 +1,162 @@
-<p>home works!</p>
+<template>
+    <div class="home-container">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h1>Welcome, {{ currentUser?.username || 'Guest' }}!</h1>
+        <p class="subtitle">Here's what's happening in your hotel today</p>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Stats Cards -->
+      <mat-grid-list *ngIf="!isLoading" cols="4" rowHeight="120px" gutterSize="16px" class="stats-grid">
+        <mat-grid-tile>
+          <mat-card class="stat-card bookings">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>calendar_today</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ stats.totalBookings }}</div>
+                <div class="stat-label">Total Bookings</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card active">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>event_available</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ stats.activeBookings }}</div>
+                <div class="stat-label">Active Bookings</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card rooms">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>king_bed</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ stats.availableRooms }}</div>
+                <div class="stat-label">Available Rooms</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile *ngIf="canViewFinancials">
+          <mat-card class="stat-card revenue">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>attach_money</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ stats.totalRevenue | currency }}</div>
+                <div class="stat-label">Total Revenue</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+      <!-- Quick Actions & Recent Activity -->
+      <div *ngIf="!isLoading" class="dashboard-content">
+        <div class="content-row">
+          <!-- Quick Actions -->
+          <mat-card class="quick-actions-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>flash_on</mat-icon>
+              <mat-card-title>Quick Actions</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="action-buttons">
+                <button mat-raised-button color="primary" routerLink="/bookings/new" *ngIf="canCreateBooking">
+                  <mat-icon>add</mat-icon>
+                  New Booking
+                </button>
+                <button mat-raised-button color="accent" routerLink="/rooms" *ngIf="canManageRooms">
+                  <mat-icon>king_bed</mat-icon>
+                  Manage Rooms
+                </button>
+                <button mat-raised-button color="warn" routerLink="/tenants/new" *ngIf="canManageTenants">
+                  <mat-icon>person_add</mat-icon>
+                  Add Tenant
+                </button>
+                <button mat-raised-button routerLink="/payments/new" *ngIf="canCreatePayment">
+                  <mat-icon>payment</mat-icon>
+                  Record Payment
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Recent Bookings -->
+          <mat-card class="recent-bookings-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>history</mat-icon>
+              <mat-card-title>Recent Bookings</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item *ngFor="let booking of recentBookings" class="booking-item">
+                  <mat-icon matListItemIcon [class]="'status-' + (booking.status | lowercase)">
+                    {{ getStatusIcon(booking.status) }}
+                  </mat-icon>
+                  <div matListItemTitle>
+                    Room {{ booking.roomNumber }} - {{ booking.tenantName }}
+                  </div>
+                  <div matListItemLine>
+                    {{ booking.checkInDate | date:'MMM d' }} - {{ booking.checkOutDate | date:'MMM d, y' }}
+                  </div>
+                  <mat-chip-listbox matListItemMeta>
+                    <mat-chip [class]="'status-chip ' + (booking.status | lowercase)">
+                      {{ booking.status }}
+                    </mat-chip>
+                  </mat-chip-listbox>
+                </mat-list-item>
+                <mat-list-item *ngIf="recentBookings.length === 0">
+                  <div matListItemTitle class="no-data">No recent bookings</div>
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <button mat-button routerLink="/bookings">View All</button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+
+        <!-- Room Status Overview -->
+        <mat-card class="room-status-card" *ngIf="canViewRooms">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>meeting_room</mat-icon>
+            <mat-card-title>Room Status Overview</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-grid-list cols="6" rowHeight="80px" gutterSize="8px">
+              <mat-grid-tile *ngFor="let room of rooms.slice(0, 12)">
+                <div class="room-tile" [class.available]="room.isAvailable" [class.occupied]="!room.isAvailable">
+                  <div class="room-number">{{ room.roomNumber }}</div>
+                  <div class="room-type">{{ room.roomType }}</div>
+                  <mat-icon>{{ room.isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
+                </div>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-button routerLink="/rooms">View All Rooms</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+</template>

@@ -1,1 +1,148 @@
-<p>login works!</p>
+<template>
+    <div class="login-container">
+      <mat-card class="login-card">
+        <mat-card-header class="login-header">
+          <mat-card-title>
+            <mat-icon class="hotel-icon">hotel</mat-icon>
+            <h1>Hotel Booking System</h1>
+          </mat-card-title>
+          <mat-card-subtitle>Sign in to manage your bookings</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <mat-tab-group [(selectedIndex)]="activeTab" animationDuration="300ms">
+            <!-- Login Tab -->
+            <mat-tab label="Sign In">
+              <form (ngSubmit)="onLogin()" class="login-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input 
+                    matInput 
+                    type="email" 
+                    [(ngModel)]="loginData.email" 
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                    email>
+                  <mat-icon matPrefix>email</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input 
+                    matInput 
+                    [type]="hidePassword ? 'password' : 'text'"
+                    [(ngModel)]="loginData.password" 
+                    name="password"
+                    placeholder="Enter your password"
+                    required>
+                  <mat-icon matPrefix>lock</mat-icon>
+                  <button 
+                    mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="hidePassword = !hidePassword">
+                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                  </button>
+                </mat-form-field>
+                
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  type="submit" 
+                  class="full-width login-button"
+                  [disabled]="isLoading">
+                  <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+                  <span *ngIf="!isLoading">Sign In</span>
+                </button>
+              </form>
+            </mat-tab>
+            
+            <!-- Register Tab -->
+            <mat-tab label="Sign Up">
+              <form (ngSubmit)="onRegister()" class="login-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Full Name</mat-label>
+                  <input 
+                    matInput 
+                    type="text" 
+                    [(ngModel)]="registerData.username" 
+                    name="username"
+                    placeholder="Enter your full name"
+                    required>
+                  <mat-icon matPrefix>person</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input 
+                    matInput 
+                    type="email" 
+                    [(ngModel)]="registerData.email" 
+                    name="registerEmail"
+                    placeholder="Enter your email"
+                    required
+                    email>
+                  <mat-icon matPrefix>email</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input 
+                    matInput 
+                    [type]="hideRegPassword ? 'password' : 'text'"
+                    [(ngModel)]="registerData.password" 
+                    name="registerPassword"
+                    placeholder="Create a password"
+                    required
+                    minlength="6">
+                  <mat-icon matPrefix>lock</mat-icon>
+                  <button 
+                    mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="hideRegPassword = !hideRegPassword">
+                    <mat-icon>{{hideRegPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                  </button>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Confirm Password</mat-label>
+                  <input 
+                    matInput 
+                    [type]="hideConfirmPassword ? 'password' : 'text'"
+                    [(ngModel)]="registerData.confirmPassword" 
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    required>
+                  <mat-icon matPrefix>lock_outline</mat-icon>
+                  <button 
+                    mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="hideConfirmPassword = !hideConfirmPassword">
+                    <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                  </button>
+                </mat-form-field>
+                
+                <button 
+                  mat-raised-button 
+                  color="accent" 
+                  type="submit" 
+                  class="full-width login-button"
+                  [disabled]="isLoading">
+                  <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+                  <span *ngIf="!isLoading">Create Account</span>
+                </button>
+              </form>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+        
+        <mat-card-footer *ngIf="errorMessage" class="error-footer">
+          <mat-icon color="warn">error</mat-icon>
+          <span class="error-text">{{ errorMessage }}</span>
+        </mat-card-footer>
+      </mat-card>
+    </div>
+</template>

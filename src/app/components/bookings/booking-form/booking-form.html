@@ -1,0 +1,205 @@
+ <template>
+    <div class="container">
+      <div class="page-header">
+        <button mat-icon-button routerLink="/bookings">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">{{ isEditMode ? 'Edit Booking' : 'New Booking' }}</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Booking Form -->
+      <mat-card *ngIf="!isLoading" class="form-card">
+        <mat-card-content>
+          <mat-stepper linear #stepper>
+            <!-- Step 1: Select Dates -->
+            <mat-step label="Select Dates" [completed]="isStep1Valid()">
+              <div class="step-content">
+                <h3>Select Check-in and Check-out Dates</h3>
+                
+                <div class="date-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Check-in Date</mat-label>
+                    <input 
+                      matInput 
+                      [matDatepicker]="checkInPicker"
+                      [(ngModel)]="booking.checkInDate"
+                      name="checkInDate"
+                      [min]="minDate"
+                      (dateChange)="onDateChange()"
+                      required>
+                    <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #checkInPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Check-out Date</mat-label>
+                    <input 
+                      matInput 
+                      [matDatepicker]="checkOutPicker"
+                      [(ngModel)]="booking.checkOutDate"
+                      name="checkOutDate"
+                      [min]="booking.checkInDate || minDate"
+                      (dateChange)="onDateChange()"
+                      required>
+                    <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #checkOutPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+
+                <div *ngIf="nights > 0" class="nights-info">
+                  <mat-icon>night_shelter</mat-icon>
+                  <span>{{ nights }} night{{ nights > 1 ? 's' : '' }}</span>
+                </div>
+
+                <div class="step-actions">
+                  <button mat-button matStepperNext [disabled]="!isStep1Valid()" color="primary">
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-step>
+
+            <!-- Step 2: Select Room -->
+            <mat-step label="Select Room" [completed]="isStep2Valid()">
+              <div class="step-content">
+                <h3>Available Rooms</h3>
+                
+                <div *ngIf="availableRooms.length === 0" class="no-rooms">
+                  <mat-icon>hotel</mat-icon>
+                  <p>No rooms available for selected dates</p>
+                  <button mat-button matStepperPrevious>Go Back</button>
+                </div>
+
+                <div class="rooms-grid" *ngIf="availableRooms.length > 0">
+                  <mat-card 
+                    *ngFor="let room of availableRooms" 
+                    class="room-card"
+                    [class.selected]="booking.roomID === room.roomID"
+                    (click)="selectRoom(room)">
+                    <mat-card-content>
+                      <div class="room-header">
+                        <mat-icon>king_bed</mat-icon>
+                        <span class="room-number">Room {{ room.roomNumber }}</span>
+                      </div>
+                      <div class="room-type">{{ room.roomType }}</div>
+                      <div class="room-price">
+                        <span class="price">{{ room.pricePerNight | currency }}</span>
+                        <span class="per-night">/night</span>
+                      </div>
+                      <div *ngIf="nights > 0" class="total-price">
+                        Total: {{ (room.pricePerNight || 0) * nights | currency }}
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+
+                <div class="step-actions">
+                  <button mat-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+                  <button mat-button matStepperNext [disabled]="!isStep2Valid()" color="primary">
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-step>
+
+            <!-- Step 3: Select Guest -->
+            <mat-step label="Guest Details" [completed]="isStep3Valid()">
+              <div class="step-content">
+                <h3>Select Guest</h3>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Select Tenant</mat-label>
+                  <mat-select [(ngModel)]="booking.tenantID" name="tenantID" required>
+                    <mat-option *ngFor="let tenant of tenants" [value]="tenant.tenantID">
+                      {{ tenant.fullName }} ({{ tenant.email }})
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>person</mat-icon>
+                </mat-form-field>
+
+                <div class="new-tenant-link">
+                  <a mat-button color="accent" routerLink="/tenants/new" target="_blank">
+                    <mat-icon>person_add</mat-icon>
+                    Add New Guest
+                  </a>
+                </div>
+
+                <div class="step-actions">
+                  <button mat-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+                  <button mat-button matStepperNext [disabled]="!isStep3Valid()" color="primary">
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-step>
+
+            <!-- Step 4: Review & Confirm -->
+            <mat-step label="Review & Confirm">
+              <div class="step-content">
+                <h3>Booking Summary</h3>
+                
+                <mat-card class="summary-card">
+                  <mat-card-content>
+                    <div class="summary-row">
+                      <span class="label">Room:</span>
+                      <span class="value">Room {{ selectedRoom?.roomNumber }} ({{ selectedRoom?.roomType }})</span>
+                    </div>
+                    <div class="summary-row">
+                      <span class="label">Check-in:</span>
+                      <span class="value">{{ booking.checkInDate | date:'fullDate' }}</span>
+                    </div>
+                    <div class="summary-row">
+                      <span class="label">Check-out:</span>
+                      <span class="value">{{ booking.checkOutDate | date:'fullDate' }}</span>
+                    </div>
+                    <div class="summary-row">
+                      <span class="label">Duration:</span>
+                      <span class="value">{{ nights }} night{{ nights > 1 ? 's' : '' }}</span>
+                    </div>
+                    <div class="summary-row">
+                      <span class="label">Guest:</span>
+                      <span class="value">{{ selectedTenant?.fullName }}</span>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="summary-row total">
+                      <span class="label">Total Amount:</span>
+                      <span class="value">{{ totalAmount | currency }}</span>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <div class="step-actions">
+                  <button mat-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+                  <button 
+                    mat-raised-button 
+                    color="primary" 
+                    (click)="onSubmit()"
+                    [disabled]="isSaving">
+                    <mat-spinner diameter="20" *ngIf="isSaving"></mat-spinner>
+                    <span *ngIf="!isSaving">{{ isEditMode ? 'Update Booking' : 'Create Booking' }}</span>
+                  </button>
+                </div>
+              </div>
+            </mat-step>
+          </mat-stepper>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</template>
