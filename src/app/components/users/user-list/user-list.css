@@ -1,0 +1,98 @@
+
+    .container {
+      padding: 24px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .page-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    .filter-field {
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 16px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .users-table {
+      width: 100%;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-avatar {
+      color: #667eea;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .role-chip {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    
+    .role-chip.admin {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .role-chip.manager {
+      background-color: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .role-chip.receptionist {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+    
+    .role-chip.customer {
+      background-color: #fff3e0;
+      color: #f57c00;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 48px;
+      color: #999;
+    }
+    
+    .no-data mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 48px;
+    }
+    
+    th.mat-sort-header-sorted {
+      color: #667eea;
+    }

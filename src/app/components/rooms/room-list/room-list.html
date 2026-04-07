@@ -1,1 +1,173 @@
-<p>room-list works!</p>
+<template>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">Room Management</h1>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          routerLink="/rooms/new"
+          *ngIf="canCreate">
+          <mat-icon>add</mat-icon>
+          Add Room
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Rooms Table -->
+      <mat-card *ngIf="!isLoading">
+        <mat-card-content>
+          <!-- Filters -->
+          <div class="filters-row">
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Search rooms</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Filter by number, type...">
+              <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="type-filter">
+              <mat-label>Room Type</mat-label>
+              <mat-select [(ngModel)]="typeFilter" (selectionChange)="filterByType()">
+                <mat-option value="">All Types</mat-option>
+                <mat-option *ngFor="let type of roomTypes" [value]="type.value">
+                  {{ type.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="status-filter">
+              <mat-label>Availability</mat-label>
+              <mat-select [(ngModel)]="statusFilter" (selectionChange)="filterByStatus()">
+                <mat-option value="">All</mat-option>
+                <mat-option value="available">Available</mat-option>
+                <mat-option value="occupied">Occupied</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="rooms-table">
+              
+              <!-- Room Number Column -->
+              <ng-container matColumnDef="roomNumber">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Room Number </th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="room-info">
+                    <mat-icon [class.available]="room.isAvailable" [class.occupied]="!room.isAvailable">
+                      {{ room.isAvailable ? 'check_circle' : 'cancel' }}
+                    </mat-icon>
+                    <span class="room-number">Room {{ room.roomNumber }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Room Type Column -->
+              <ng-container matColumnDef="roomType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+                <td mat-cell *matCellDef="let room">
+                  <mat-chip class="type-chip">
+                    {{ room.roomType }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Price Column -->
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Price/Night </th>
+                <td mat-cell *matCellDef="let room">
+                  <span class="price">{{ room.pricePerNight | currency }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                <td mat-cell *matCellDef="let room">
+                  <mat-chip [class]="room.isAvailable ? 'available-chip' : 'occupied-chip'">
+                    {{ room.isAvailable ? 'Available' : 'Occupied' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let room">
+                  <div class="action-buttons">
+                    <button 
+                      mat-icon-button 
+                      color="primary"
+                      [routerLink]="['/rooms/edit', room.roomID]"
+                      matTooltip="Edit"
+                      *ngIf="canEdit">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      [class.available-toggle]="!room.isAvailable"
+                      [class.occupied-toggle]="room.isAvailable"
+                      (click)="toggleAvailability(room)"
+                      matTooltip="Toggle Availability"
+                      *ngIf="canEdit">
+                      <mat-icon>{{ room.isAvailable ? 'block' : 'check_circle' }}</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deleteRoom(room)"
+                      matTooltip="Delete"
+                      *ngIf="canDelete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+              <!-- No Data Row -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+                  <mat-icon>meeting_room</mat-icon>
+                  <p>No rooms found</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <mat-paginator 
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            showFirstLastButtons
+            aria-label="Select page of rooms">
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Room Cards View (Alternative) -->
+      <div class="rooms-cards-view" *ngIf="!isLoading">
+        <h3>Room Overview</h3>
+        <div class="rooms-grid">
+          <mat-card 
+            *ngFor="let room of filteredRooms.slice(0, 8)" 
+            class="room-card"
+            [class.available]="room.isAvailable"
+            [class.occupied]="!room.isAvailable">
+            <mat-card-content>
+              <div class="room-status-icon">
+                <mat-icon>{{ room.isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
+              </div>
+              <div class="room-details">
+                <div class="room-number-large">{{ room.roomNumber }}</div>
+                <div class="room-type">{{ room.roomType }}</div>
+                <div class="room-price">{{ room.pricePerNight | currency }}/night</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+</template>

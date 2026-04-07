@@ -1,0 +1,84 @@
+
+    .login-container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .login-header {
+      text-align: center;
+      padding: 24px 24px 0;
+      display: block;
+    }
+    
+    .login-header mat-card-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .hotel-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #667eea;
+    }
+    
+    .login-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    mat-card-subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    
+    .login-form {
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .full-width {
+      width: 100%;
+    }
+    
+    .login-button {
+      height: 48px;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+    
+    .error-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      background-color: #ffebee;
+      border-radius: 0 0 16px 16px;
+    }
+    
+    .error-text {
+      color: #c62828;
+      font-size: 14px;
+    }
+    
+    ::ng-deep .mat-mdc-tab-body-content {
+      padding: 0 8px;
+    }

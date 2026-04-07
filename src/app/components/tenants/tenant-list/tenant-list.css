@@ -1,0 +1,163 @@
+
+    .container {
+      padding: 24px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .page-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    .filter-field {
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 16px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .tenants-table {
+      width: 100%;
+    }
+    
+    .tenant-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .tenant-name {
+      font-weight: 500;
+    }
+    
+    .email-link, .phone-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #667eea;
+      text-decoration: none;
+    }
+    
+    .email-link:hover, .phone-link:hover {
+      text-decoration: underline;
+    }
+    
+    .address {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 200px;
+    }
+    
+    .address span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    mat-icon.small {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+    
+    .no-data {
+      color: #999;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 48px;
+      color: #999;
+    }
+    
+    .no-data mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 48px;
+    }
+    
+    /* Cards Section */
+    .tenant-cards {
+      margin-top: 32px;
+    }
+    
+    .tenant-cards h3 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .tenant-card {
+      transition: all 0.2s;
+    }
+    
+    .tenant-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card-avatar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #666;
+      margin-top: 8px;
+    }
+    
+    .contact-info mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }

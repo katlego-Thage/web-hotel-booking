@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,12 +19,12 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { Payment, PaymentMethods, UserRole } from '../../../models';
-import { Auth, PaymentService } from '../../../services';
+import { Booking, BookingStatus, UserRole } from '../../../models';
+import { Auth, BookingService } from '../../../services';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
-  selector: 'app-payment-list',
+  selector: 'app-booking-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -42,32 +44,36 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  templateUrl: './payment-list.html',
-  styleUrl: './payment-list.css',
+  templateUrl: './booking-list.html',
+  styleUrl: './booking-list.css',
 })
 
-export class PaymentListComponent implements OnInit {
+export class BookingListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['paymentID', 'booking', 'amount', 'method', 'date', 'actions'];
-  dataSource = new MatTableDataSource<Payment>([]);
+  displayedColumns: string[] = ['bookingID', 'room', 'tenant', 'dates', 'status', 'bookingDate', 'actions'];
+  dataSource = new MatTableDataSource<Booking>([]);
   isLoading = true;
-  payments: Payment[] = [];
-  methodFilter = '';
-  paymentMethods = PaymentMethods;
+  bookings: Booking[] = [];
+  statusFilter = '';
+  isMyBookings = false;
 
   constructor(
-    private paymentService: PaymentService,
+    private bookingService: BookingService,
     private authService: Auth,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.loadPayments();
+    // Check if this is the "my bookings" view
+    this.isMyBookings = window.location.pathname.includes('/my');
+    this.loadBookings();
   }
 
   ngAfterViewInit(): void {
@@ -75,16 +81,16 @@ export class PaymentListComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  loadPayments(): void {
+  loadBookings(): void {
     this.isLoading = true;
-    this.paymentService.getPayments().subscribe({
-      next: (payments) => {
-        this.payments = payments;
-        this.dataSource.data = payments;
+    this.bookingService.getBookings().subscribe({
+      next: (bookings) => {
+        this.bookings = bookings;
+        this.dataSource.data = bookings;
         this.isLoading = false;
       },
       error: (error) => {
-        this.snackBar.open('Failed to load payments: ' + error.message, 'Close', { duration: 5000 });
+        this.snackBar.open('Failed to load bookings: ' + error.message, 'Close', { duration: 5000 });
         this.isLoading = false;
       }
     });
@@ -99,33 +105,40 @@ export class PaymentListComponent implements OnInit {
     }
   }
 
-  filterByMethod(): void {
-    if (this.methodFilter) {
-      this.dataSource.data = this.payments.filter(p => p.paymentMethod === this.methodFilter);
+  filterByStatus(): void {
+    if (this.statusFilter) {
+      this.dataSource.data = this.bookings.filter(b => b.status === this.statusFilter);
     } else {
-      this.dataSource.data = this.payments;
+      this.dataSource.data = this.bookings;
     }
   }
 
-  getMethodIcon(method?: string): string {
-    const methodObj = this.paymentMethods.find(m => m.value === method);
-    return methodObj?.icon || 'payment';
+  getStatusClass(status?: string): string {
+    return (status || '').toLowerCase().replace(' ', '');
   }
 
-  get totalRevenue(): number {
-    return this.payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  updateStatus(booking: Booking, status: string): void {
+    this.bookingService.updateStatus(booking.bookingID, { status: status as BookingStatus }).subscribe({
+      next: () => {
+        this.snackBar.open(`Booking status updated to ${status}`, 'Close', { duration: 3000 });
+        this.loadBookings();
+      },
+      error: (error) => {
+        this.snackBar.open('Failed to update status: ' + error.message, 'Close', { duration: 5000 });
+      }
+    });
   }
 
-  get averagePayment(): number {
-    return this.payments.length > 0 ? this.totalRevenue / this.payments.length : 0;
+  canCancel(status?: string): boolean {
+    return status === 'Pending' || status === 'Confirmed';
   }
 
-  deletePayment(payment: Payment): void {
+  deleteBooking(booking: Booking): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Delete Payment',
-        message: `Are you sure you want to delete payment #${payment.paymentID}? This action cannot be undone.`,
+        title: 'Delete Booking',
+        message: `Are you sure you want to delete booking #${booking.bookingID}? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
         confirmColor: 'warn'
@@ -134,13 +147,13 @@ export class PaymentListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.paymentService.deletePayment(payment.paymentID).subscribe({
+        this.bookingService.deleteBooking(booking.bookingID).subscribe({
           next: () => {
-            this.snackBar.open('Payment deleted successfully', 'Close', { duration: 3000 });
-            this.loadPayments();
+            this.snackBar.open('Booking deleted successfully', 'Close', { duration: 3000 });
+            this.loadBookings();
           },
           error: (error) => {
-            this.snackBar.open('Failed to delete payment: ' + error.message, 'Close', { duration: 5000 });
+            this.snackBar.open('Failed to delete booking: ' + error.message, 'Close', { duration: 5000 });
           }
         });
       }
@@ -156,8 +169,11 @@ export class PaymentListComponent implements OnInit {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.Manager, UserRole.Receptionist, UserRole.Customer]);
   }
 
+  get canUpdateStatus(): boolean {
+    return this.authService.hasAnyRole([UserRole.Admin, UserRole.Manager, UserRole.Receptionist]);
+  }
+
   get canDelete(): boolean {
-    return this.authService.hasAnyRole([UserRole.Admin, UserRole.Manager]);
+    return this.authService.hasAnyRole([UserRole.Admin, UserRole.Manager, UserRole.Customer]);
   }
 }
-

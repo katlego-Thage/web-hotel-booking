@@ -1,1 +1,102 @@
-<p>user-form works!</p>
+<template>
+    <div class="container">
+      <div class="page-header">
+        <button mat-icon-button routerLink="/users">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">{{ isEditMode ? 'Edit User' : 'Add New User' }}</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- User Form -->
+      <mat-card *ngIf="!isLoading" class="form-card">
+        <mat-card-content>
+          <form (ngSubmit)="onSubmit()" class="user-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Username</mat-label>
+                <input 
+                  matInput 
+                  [(ngModel)]="user.username" 
+                  name="username"
+                  placeholder="Enter username"
+                  required>
+                <mat-icon matPrefix>person</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input 
+                  matInput 
+                  type="email"
+                  [(ngModel)]="user.email" 
+                  name="email"
+                  placeholder="Enter email address"
+                  required
+                  email>
+                <mat-icon matPrefix>email</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row" *ngIf="!isEditMode">
+              <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input 
+                  matInput 
+                  [type]="hidePassword ? 'password' : 'text'"
+                  [(ngModel)]="password" 
+                  name="password"
+                  placeholder="Enter password"
+                  required
+                  minlength="6">
+                <mat-icon matPrefix>lock</mat-icon>
+                <button 
+                  mat-icon-button 
+                  matSuffix 
+                  type="button"
+                  (click)="hidePassword = !hidePassword">
+                  <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Role</mat-label>
+                <mat-select [(ngModel)]="user.roleID" name="roleID" required>
+                  <mat-option *ngFor="let role of availableRoles" [value]="role.id">
+                    <mat-icon>{{ role.icon }}</mat-icon>
+                    {{ role.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>badge</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                mat-button 
+                type="button" 
+                routerLink="/users">
+                Cancel
+              </button>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="isSaving">
+                <mat-spinner diameter="20" *ngIf="isSaving"></mat-spinner>
+                <span *ngIf="!isSaving">{{ isEditMode ? 'Update' : 'Create' }}</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</template>
