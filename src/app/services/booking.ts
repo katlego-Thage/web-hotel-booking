@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AvailableRoomsRequest, Booking, BookingDetails, CreateBookingRequest, Room, UpdateBookingRequest, UpdateStatusRequest } from '../models';
@@ -9,13 +9,34 @@ import { AvailableRoomsRequest, Booking, BookingDetails, CreateBookingRequest, R
 export class BookingService {
 
   private readonly API_URL = 'https://localhost:7048/api';
-
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'auth_user';
+  
   constructor(private http: HttpClient) { }
 
+  // getBookings(): Observable<Booking[]> {
+  //   return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`);
+  // }
+  //========== retrive token from local storage and include in headers for authenticated requests
+ get token(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
   getBookings(): Observable<Booking[]> {
-    return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`);
+  const token = this.token;
+
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`, { headers });
 }
- getBooking(id: number): Observable<Booking> {
+
+  //============
+  getBooking(id: number): Observable<Booking> {
     return this.http.get<Booking>(`${this.API_URL}/Booking/GetBooking/${id}`);
   }
 

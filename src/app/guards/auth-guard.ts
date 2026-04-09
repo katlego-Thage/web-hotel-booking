@@ -7,10 +7,6 @@ import { Auth } from '../services/auth';
   providedIn: 'root'
 })
 
-// export const authGuard: CanActivateFn = (route, state) => {
-//   return true;
-// };
-
 export class AuthGuard implements CanActivate, CanActivateChild {
   
   constructor(
@@ -116,10 +112,3 @@ export class ReceptionistGuard implements CanActivate {
     return false;
   }
 }
-  // canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
-  //   throw new Error('Method not implemented.');
-  // }
-  
-  // canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
-  //   throw new Error('Method not implemented.');
-  // }

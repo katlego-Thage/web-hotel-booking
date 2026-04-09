@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import {  MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest } from '../../../models';
 import { Auth } from '../../../services';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -50,8 +49,7 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
   activeTab = 0;
-  // returnUrl: string = '/';
-  returnUrl: string = '/app/dashboard';
+  returnUrl: string = '/dashboard.component';
   
   constructor(
     private authService: Auth,
@@ -59,11 +57,14 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private notificationService: NotificationService 
   ) {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    
-    // if (this.authService.isAuthenticated) {
-    //   this.router.navigate([this.returnUrl]);
-    // }
+    const queryReturn = this.route.snapshot.queryParams['returnUrl'];
+
+    if (queryReturn && queryReturn !== '/login' && queryReturn.startsWith('/')) {
+      this.returnUrl = queryReturn;
+    } else {
+      this.returnUrl = '/dashboard';
+    }
+
     if (this.authService.isAuthenticated) {
   this.router.navigate([this.returnUrl]);
 }

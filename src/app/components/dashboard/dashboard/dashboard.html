@@ -1,4 +1,3 @@
- <template>
     <div class="dashboard-container">
       <!-- Top Toolbar -->
       <mat-toolbar color="primary" class="top-toolbar">
@@ -107,8 +106,10 @@
 
         <!-- Main Content Area -->
         <mat-sidenav-content class="content-area">
-          <router-outlet></router-outlet>
+          <!-- <router-outlet></router-outlet> -->
+           <div class="content">
+            <router-outlet></router-outlet> 
+          </div>
         </mat-sidenav-content>
       </mat-sidenav-container>
     </div>
-</template>
