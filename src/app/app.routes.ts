@@ -11,12 +11,12 @@ export const routes: Routes = [
   
     {
     path: 'login',
-    loadComponent: () => import('./components/login/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () => import('./components/logincomponent/login/login.component').then(m => m.LoginComponent)
   },
   // Protected Routes with Dashboard Layout
   {
     path: '',
-    loadComponent: () => import('./components/dashboard/dashboard/dashboard').then(m => m.DashboardComponent),
+    loadComponent: () => import('./components/dashboard/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AuthGuard],
     children: [
       // Dashboard Home
