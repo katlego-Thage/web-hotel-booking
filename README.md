@@ -37,6 +37,7 @@ cd your-repo-name
     ng add @angular/material
     npm install
     npm install -g @angular/cli@21.2.6
+    npm install material-design-icons
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
