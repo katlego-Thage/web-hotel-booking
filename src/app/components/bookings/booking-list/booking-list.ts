@@ -72,7 +72,7 @@ export class BookingListComponent implements OnInit {
 
   ngOnInit(): void {
     // Check if this is the "my bookings" view
-    this.isMyBookings = window.location.pathname.includes('/my');
+    this.isMyBookings = window.location.pathname.includes('/mybookings');
     this.loadBookings();
   }
 

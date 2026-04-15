@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   allNavItems: NavItem[] = [
     // Main Menu
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: [UserRole.Admin, UserRole.Manager, UserRole.Receptionist, UserRole.Customer] },
-    { label: 'My Bookings', icon: 'event_note', route: '/bookings/my', roles: [UserRole.Customer] },
+    { label: 'My Bookings', icon: 'event_note', route: '/bookings/mybookings', roles: [UserRole.Customer] },
     
     // Management
     { label: 'All Bookings', icon: 'calendar_today', route: '/bookings', roles: [UserRole.Admin, UserRole.Manager, UserRole.Receptionist] },

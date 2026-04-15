@@ -54,7 +54,7 @@ export const routes: Routes = [
         data: { roles: [UserRole.Admin, UserRole.Manager, UserRole.Receptionist, UserRole.Customer] }
       },
       {
-        path: 'bookings/my',
+        path: 'bookings/mybookings',
         loadComponent: () => import('./components/bookings/booking-list/booking-list').then(m => m.BookingListComponent),
         data: { roles: [UserRole.Customer] }
       },
