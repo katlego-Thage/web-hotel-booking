@@ -14,26 +14,26 @@ export class BookingService {
   
   constructor(private http: HttpClient) { }
 
-  // getBookings(): Observable<Booking[]> {
-  //   return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`);
-  // }
+  getBookings(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`);
+  }
   //========== retrive token from local storage and include in headers for authenticated requests
  get token(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-  getBookings(): Observable<Booking[]> {
-  const token = this.token;
+  // getBookings(): Observable<Booking[]> {
+  // const token = this.token;
 
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
+  // if (!token) {
+  //   throw new Error('No authentication token found');
+  // }
 
-  const headers = new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
-
-  return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`, { headers });
-}
+  // const headers = new HttpHeaders({
+  //   Authorization: `Bearer ${token}`
+  // });
+// https://localhost:7048/api/Booking/GetBooking
+  // return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`, { headers });
+  // }
 
   //============
   getBooking(id: number): Observable<Booking> {
