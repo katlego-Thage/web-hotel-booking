@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateTenantRequest, Tenant, UpdateTenantRequest } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TenantService {
-   private readonly API_URL = 'https://localhost:7048/api';
+   private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -31,8 +32,6 @@ export class TenantService {
   }
 
   searchTenants(query: string): Observable<Tenant[]> {
-    // Note to self: This would require a search endpoint on the backend
-    // For now, we'll filter on the client side
     return this.getTenants();
   }
 }

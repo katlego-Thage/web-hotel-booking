@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateRoomRequest, Room, UpdateRoomRequest } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoomService {
 
-    private readonly API_URL = 'https://localhost:7048/api';
+    private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
