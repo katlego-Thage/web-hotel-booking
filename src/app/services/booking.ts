@@ -2,46 +2,57 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AvailableRoomsRequest, Booking, BookingDetails, CreateBookingRequest, Room, UpdateBookingRequest, UpdateStatusRequest } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookingService {
 
-  private readonly API_URL = 'https://localhost:7048/api';
+  private readonly API_URL = environment.apiUrl;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
   
   constructor(private http: HttpClient) { }
 
-  getBookings(): Observable<Booking[]> {
-    return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`);
-  }
-  //========== retrive token from local storage and include in headers for authenticated requests
  get token(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-  // getBookings(): Observable<Booking[]> {
-  // const token = this.token;
 
-  // if (!token) {
-  //   throw new Error('No authentication token found');
-  // }
+  getBookings(): Observable<Booking[]> {
+    const token = this.token;
+    if (!token) {
+    throw new Error('No authentication token found');
+  }
 
-  // const headers = new HttpHeaders({
-  //   Authorization: `Bearer ${token}`
-  // });
-// https://localhost:7048/api/Booking/GetBooking
-  // return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`, { headers });
-  // }
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+    return this.http.get<Booking[]>(`${this.API_URL}/Booking/GetBooking`, { headers });
+  }
 
-  //============
   getBooking(id: number): Observable<Booking> {
-    return this.http.get<Booking>(`${this.API_URL}/Booking/GetBooking/${id}`);
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<Booking>(`${this.API_URL}/Booking/GetBooking/${id}`, { headers });
   }
 
   getBookingDetails(id: number): Observable<BookingDetails> {
-    return this.http.get<BookingDetails>(`${this.API_URL}/Booking/GetBookingDetails/${id}`);
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<BookingDetails>(`${this.API_URL}/Booking/GetBookingDetails/${id}`, { headers });
   }
 
   getAvailableRooms(params: AvailableRoomsRequest): Observable<Room[]> {
@@ -57,18 +68,54 @@ export class BookingService {
       httpParams = httpParams.set('roomType', params.roomType.toString());
     }
     
-    return this.http.get<Room[]>(`${this.API_URL}/Booking/AvailableRooms`, { params: httpParams });
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.get<Room[]>(`${this.API_URL}/Booking/AvailableRooms`, { params: httpParams, headers });
   }
 
   createBooking(booking: CreateBookingRequest): Observable<Booking> {
-    return this.http.post<Booking>(`${this.API_URL}/Booking/CreateBooking`, booking);
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.post<Booking>(`${this.API_URL}/Booking/CreateBooking`, booking, { headers }      );
   }
 
   updateBooking(id: number, booking: UpdateBookingRequest): Observable<Booking> {
-    return this.http.put<Booking>(`${this.API_URL}/Booking/UpdateBooking/${id}`, booking);
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.put<Booking>(`${this.API_URL}/Booking/UpdateBooking/${id}`, booking, { headers });
   }
 
   updateStatus(id: number, status: UpdateStatusRequest): Observable<Booking> {
+    const token = this.token;
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
     return this.http.patch<Booking>(`${this.API_URL}/Booking/UpdateStatus/${id}`, JSON.stringify(status.status), {
       headers: { 'Content-Type': 'application/json' }
     });

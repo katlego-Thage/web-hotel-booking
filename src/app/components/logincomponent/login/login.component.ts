@@ -115,7 +115,7 @@ export class LoginComponent {
     this.authService.register({
       username: this.registerData.username,
       email: this.registerData.email,
-      password: this.registerData.password
+      passwordHash: this.registerData.password
     }).subscribe({
       next: () => {
         this.isLoading = false;

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { CreatePaymentRequest, Payment, UpdatePaymentRequest } from '../models';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
-    private readonly API_URL = 'https://localhost:7048/api';
+    private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -31,8 +32,6 @@ export class PaymentService {
   }
 
   getPaymentsByBooking(bookingId: number): Observable<Payment[]> {
-    // Note to self: This would require a specific endpoint on the backend
-    // For now, we filter on the client side
     return this.getPayments();
   }
 }
